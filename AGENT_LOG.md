@@ -6,6 +6,18 @@ or tokens.
 
 ---
 
+## 2026-09-16 - Published
+
+Live at https://minerclass.github.io/groundwork/ and linked from the games hub.
+
+Pages had to be switched on by hand first, as on the sibling repositories:
+`actions/configure-pages` fails until Settings -> Pages -> Source is set to
+GitHub Actions, and the workflow token cannot do it. Verified after the deploy
+rather than from a green check: the live page and every asset returned 200, and
+the near yard was played to completion on the deployed build, lantern up at 10.
+
+---
+
 ## 2026-09-16 - First build
 
 **The concept came before the voxels.** The brief was a Minecraft-style game about
