@@ -1,0 +1,103 @@
+:root{color-scheme:dark;--ink:#f3f1ea;--accent:#f0c987;--panel:#141a22e0;font-family:Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#11151c;color:var(--ink)}
+button,input,textarea,select{font:inherit}
+button,.button{min-height:44px;padding:10px 15px;border:1px solid #c3d0d85c;border-radius:5px;background:#1b2530d9;color:var(--ink);font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+button:hover,.button:hover{background:#2c3c4b}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+button.primary{background:var(--accent);color:#1a1f25;border-color:var(--accent);font-weight:700;padding:14px 22px}
+.primary:hover{background:#ffdda6}
+[hidden]{display:none!important}
+
+#game{height:100svh;min-height:560px;position:relative;overflow:hidden}
+#world{position:absolute;inset:0;width:100%;height:100%;touch-action:none;outline:none;display:block}
+.vignette{pointer-events:none;position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,#0b0f1499)}
+
+header{position:absolute;top:22px;left:26px;right:26px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.brand{font-size:17px;font-weight:700;letter-spacing:4px;text-shadow:0 1px 8px #0b0f14}
+.brand span{display:block;font-size:9px;letter-spacing:2px;margin-top:6px;opacity:.82}
+
+.lot{position:absolute;top:96px;left:26px;max-width:290px;pointer-events:none;text-shadow:0 2px 10px #0b0f14}
+h1{font-size:26px;font-weight:600;letter-spacing:-.6px;margin:0 0 5px}
+.lot p{font-size:13px;margin:0 0 12px;color:#dfe6ec}
+.conditions{margin:0;background:var(--panel);border:1px solid #c3d0d833;border-radius:7px;padding:11px 13px;backdrop-filter:blur(7px)}
+.conditions div{display:flex;justify-content:space-between;gap:14px;font-size:12px;padding:3px 0}
+.conditions dt{color:#a9b7c4;margin:0}
+.conditions dd{margin:0;text-align:right;color:var(--ink)}
+
+.crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:20px monospace;opacity:.8;pointer-events:none;text-shadow:0 0 5px #000}
+.readout{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);text-align:center;pointer-events:none;background:#101822c4;padding:6px 13px;border-radius:5px}
+.readout strong{display:block;font-size:13px;font-weight:600}
+.readout span{font-size:11px;color:#bccad6}
+.readout:has(strong:empty){display:none}
+
+footer{position:absolute;bottom:24px;left:26px;right:26px;display:grid;grid-template-columns:1fr auto auto;align-items:end;gap:26px;pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:2px;color:var(--accent);font-weight:700}
+.job{max-width:380px}
+.job p{font-size:14px;line-height:1.45;margin:7px 0 10px}
+.tally{display:flex;gap:18px;margin:0;flex-wrap:wrap}
+.tally div{display:flex;flex-direction:column;gap:2px}
+.tally dt{font-size:10px;letter-spacing:1px;color:#9fadba;margin:0;text-transform:uppercase}
+.tally dd{margin:0;font-size:15px;font-weight:600}
+.effort{background:var(--panel);border:1px solid #c3d0d833;border-radius:7px;padding:10px 14px}
+.keys{font-size:11px;line-height:1.8;text-align:right;color:#c6d2dd}
+
+.touch{position:absolute;bottom:112px;right:24px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
+.touch button{font-size:12px;flex:0 0 auto;min-width:44px}
+.touch button[data-key]{display:none;touch-action:none}
+#btn-impossible{font-size:12px;border-color:#e0a8a85c}
+
+#caption{position:absolute;bottom:186px;left:50%;transform:translateX(-50%);width:min(580px,calc(100% - 40px));text-align:center;background:#101822e6;padding:12px 18px;border-radius:6px;font-size:14px;line-height:1.55;pointer-events:none}
+#caption:empty{display:none}
+
+dialog{padding:32px;width:min(600px,calc(100% - 30px));max-height:calc(100svh - 30px);overflow:auto;color:var(--ink);background:#151c25f2;border:1px solid #c3d0d840;border-radius:12px;box-shadow:0 24px 80px #04070b88}
+dialog::backdrop{background:#080c1166;backdrop-filter:blur(3px)}
+h2{font-size:36px;line-height:1.14;font-weight:600;letter-spacing:-1.2px;margin:15px 0}
+h2 em{font-style:normal;color:var(--accent)}
+h3{font-size:15px;margin:24px 0 10px}
+dialog p{font-size:15px;line-height:1.62;color:#dde5ec}
+.fine{font-size:12px!important;color:#aab7c3!important}
+.instructions{display:flex;gap:22px;flex-wrap:wrap;padding:16px 0;margin:16px 0;border-top:1px solid #9fb3c144;border-bottom:1px solid #9fb3c144;font-size:12px}
+.instructions b{display:block;font-size:10px;letter-spacing:1px;color:var(--accent);margin-bottom:5px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 14px}
+dialog label{display:flex;align-items:center;gap:10px;font-size:13px;margin-top:16px}
+dialog input[type=checkbox],dialog input[type=radio]{width:17px;height:17px;accent-color:#f0c987}
+details{margin-top:18px}
+details p{font-size:13px}
+summary{cursor:pointer;font-size:13px;padding:9px 0}
+
+.scroller{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:430px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid #9fb3c133}
+thead th{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#a9b7c4}
+tbody th{font-weight:600}
+td{color:#dde5ec}
+.affordances{display:grid;gap:8px}
+.affordances label{margin:0;padding:11px 13px;border:1px solid #c3d0d840;border-radius:6px;cursor:pointer}
+.affordances label:hover{background:#1e2833}
+
+#load-error{position:absolute;inset:12%;padding:28px;background:#151c25;border-radius:10px;overflow:auto}
+a{color:#a9d8ea}
+
+@media(max-width:820px){
+  header{top:14px;left:16px;right:16px;gap:9px}
+  .brand{font-size:13px;letter-spacing:2px}
+  .brand span{font-size:8px;letter-spacing:.5px}
+  .lot{left:16px;top:80px;max-width:min(250px,60vw)}
+  h1{font-size:20px}
+  .lot p{font-size:12px}
+  .conditions div{font-size:11px}
+  footer{left:16px;right:16px;bottom:15px;display:block}
+  .job{max-width:100%}
+  .job p{font-size:13px;margin:6px 0 9px}
+  .effort{margin-top:11px;display:inline-flex}
+  .keys{display:none}
+  .touch{left:16px;right:16px;bottom:150px;max-width:none;justify-content:center}
+  .touch button[data-key]{display:inline-flex}
+  #caption{bottom:216px;font-size:13px;padding:10px 14px}
+  .readout{top:calc(50% + 20px)}
+  h2{font-size:28px}
+  dialog{padding:23px}
+  dialog p{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#1b2029"><title>Groundwork · The same job, three times</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<main id="game">
+<canvas id="world" tabindex="0" aria-label="A first-person voxel building site. W A S D moves, drag or arrow keys look, F cuts blocks, E places them, C checks whether the signal would carry."></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<header>
+  <div class="brand">GROUNDWORK<span>THE SAME JOB, THREE TIMES</span></div>
+  <button id="btn-impossible">This cannot be done here</button>
+</header>
+
+<section class="lot" aria-label="This lot">
+  <h1 id="plot-name">The near yard</h1>
+  <p id="plot-note"></p>
+  <dl id="conditions" class="conditions"></dl>
+</section>
+
+<div class="crosshair" aria-hidden="true">+</div>
+
+<section class="readout" aria-label="Target">
+  <strong id="target">—</strong><span id="target-note"></span>
+</section>
+
+<footer>
+  <div class="job">
+    <span class="eyebrow">THE JOB</span>
+    <p>Raise the signal lantern high enough, and clear enough, that it carries west to the valley.</p>
+    <dl class="tally">
+      <div><dt>Stone in hand</dt><dd id="carried">0</dd></div>
+      <div><dt>Holding</dt><dd id="holding">building stone</dd></div>
+      <div><dt>Lantern</dt><dd id="lantern-state">in your pack</dd></div>
+    </dl>
+  </div>
+  <dl class="tally effort" aria-label="What this lot has cost so far">
+    <div><dt>Time</dt><dd id="elapsed">0:00</dd></div>
+    <div><dt>Cut</dt><dd id="mined">0</dd></div>
+    <div><dt>Walked</dt><dd id="walked">0 m</dd></div>
+  </dl>
+  <div class="keys">W A S D move · drag or arrows look · Space jump<br>F cuts · E places · Q builds under you · C checks the line<br>Tab swaps · R returns · Esc pauses</div>
+</footer>
+
+<nav class="touch" aria-label="Controls">
+  <button data-key="a" aria-label="Move left">←</button>
+  <button data-key="w" aria-label="Move forward">↑</button>
+  <button data-key="s" aria-label="Move back">↓</button>
+  <button data-key="d" aria-label="Move right">→</button>
+  <button data-key=" " aria-label="Jump">Jump</button>
+  <button data-key="f" aria-label="Cut the targeted block">Cut</button>
+  <button id="btn-place">Place</button>
+  <button id="btn-check">Check</button>
+  <button id="btn-raise">Build under</button>
+  <button id="btn-swap">Swap</button>
+  <button id="btn-home">Back to the work site</button>
+</nav>
+<div id="caption" role="status" aria-live="polite"></div>
+
+<div id="load-error" role="alert" hidden>
+  <h2>The 3D world could not start.</h2>
+  <p id="error-message">This needs WebGL. Try a browser with hardware acceleration enabled.</p>
+  <a href="https://minerclass.github.io/games-hub/">Back to the games hub</a>
+</div>
+</main>
+
+<dialog id="intro" aria-labelledby="intro-title">
+  <span class="eyebrow">INFRASTRUCTURAL FRICTION</span>
+  <h2 id="intro-title">Three lots.<br><em>One job.</em></h2>
+  <p>Raise a signal lantern so it carries west to the valley. Working out how high, and where, is the same problem every time.</p>
+  <p>What changes from lot to lot is none of that. It is the pick in your hand, how far the stone sits, whether there is light, and what stands between you and the material.</p>
+  <div class="instructions">
+    <span><b>MOVE</b>W A S D · Space</span>
+    <span><b>LOOK</b>Drag or arrow keys</span>
+    <span><b>WORK</b>F cuts · E places</span>
+    <span><b>RISE</b>Q builds under you</span>
+  </div>
+  <div class="actions"><button id="begin" class="primary">Start on the near yard ↗</button></div>
+  <p class="fine">About 10 to 15 minutes. Nothing is timed and nothing is scored. Checking whether a spot would work costs you nothing and can be repeated as often as you like; only the building costs material.</p>
+</dialog>
+
+<dialog id="plot-done" aria-labelledby="done-title">
+  <span class="eyebrow">THE LANTERN CARRIES</span>
+  <h2 id="done-title">Finished.</h2>
+  <div id="done-body"></div>
+  <div class="actions"><button id="next-plot" class="primary">On to the next lot ↗</button></div>
+</dialog>
+
+<dialog id="plot-gaveup" aria-labelledby="gaveup-title">
+  <span class="eyebrow">NOT HARD. NOT POSSIBLE.</span>
+  <h2 id="gaveup-title">You were right.</h2>
+  <div id="gaveup-body"></div>
+  <div class="actions"><button id="next-plot-2" class="primary">Carry on ↗</button></div>
+</dialog>
+
+<dialog id="debrief" aria-labelledby="debrief-title">
+  <span class="eyebrow">WHAT THE THREE LOTS COST</span>
+  <h2 id="debrief-title">Same builder.<br><em>Same judgment.</em></h2>
+  <div class="scroller"><table id="debrief-table"></table></div>
+  <p>The thinking did not change across the three lots. Where the lantern had to go was worked out fresh each time, and the working out was free every time. What changed was whether you could get to it, and what it cost you on the way.</p>
+  <p>Difficulty that makes the work worth doing is productive. A wall you cannot get through is not difficulty; it is exclusion. Telling them apart is the whole skill, and it is a question about conditions rather than about people.</p>
+  <h3>Change one condition on the walled lot</h3>
+  <div id="affordance-list" class="affordances"></div>
+  <div class="actions"><button id="apply-change" class="primary">Go back and try again ↗</button></div>
+  <p class="fine">Not every resource addresses every barrier. Choose the one you think was actually stopping the work.</p>
+</dialog>
+
+<dialog id="ending" aria-labelledby="end-title">
+  <span class="eyebrow">THE CONDITIONING BASE</span>
+  <h2 id="end-title">It did not get easier.<br><em>It got possible.</em></h2>
+  <div id="end-body"></div>
+  <p>Infrastructural friction is the material and systemic layer underneath the learning: time, access, tools, policy, the room itself. It is not a fourth kind of difficulty sitting alongside the thinking, the articulating, and the becoming. It is what decides whether a learner ever reaches any of them.</p>
+  <p class="fine">Pedagogical friction, and this account of its infrastructural base, are Micah Miner's proposed contributions. This is a teaching model, not a measurement of anyone's learning, and it reports no research findings.</p>
+  <div class="actions"><button id="again" class="primary">Walk the three lots again</button>
+  <a class="button" href="https://minerclass.github.io/games-hub/">Back to the games hub</a></div>
+</dialog>
+
+<dialog id="pause" aria-labelledby="pause-title">
+  <span class="eyebrow">THE WORK WILL KEEP</span>
+  <h2 id="pause-title">Paused.</h2>
+  <div class="actions"><button id="resume" class="primary">Back to work</button>
+  <button id="lock">Mouse look</button><button id="restart">Start over</button></div>
+  <label><input id="motion" type="checkbox"> Reduce motion</label>
+  <details><summary>What this is showing</summary>
+    <p>Three lots, one job, one builder. The judgment the job asks for is identical on all three and cannot be made easier by any change to the conditions. What differs is the tool, the distance, the light, and whether anything stands between you and the material.</p>
+    <p>The point is the difference between difficulty that is worth keeping and a barrier that only looks like difficulty. Awkward controls are neither; they are a defect, and if something here is fighting you, that is a bug rather than a lesson.</p>
+  </details>
+</dialog>
+
+<script src="vendor/three.min.js"></script><script src="plots.js"></script><script src="voxel.js"></script><script src="game.js"></script>
+</body></html>
