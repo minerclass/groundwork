@@ -1,5 +1,33 @@
 # Validation
 
+## Current revision: 2026-09-18 learning story
+
+- `node --test`: 29 tests pass. The previous placement and geometry guarantees remain covered. New checks exercise chapter progression, field-note reentry and paused time, prediction feedback, optional context-specific reflections, intervention replay, classroom responses, and complete chapter data.
+- `node --check story.js`, `node --check game.js`, and `git diff --check` pass. Git reports only the repository's existing LF-to-CRLF conversion warnings.
+- Local browser checks cover the revised opening, first chapter, planner entry from the chapter, a mistaken clear-signal prediction at near-yard height 9/lane 10, and a matching prediction after changing height to 10. Neither preview consumes stone.
+- Desktop chapter layout and the 390 x 844 planner and game HUD were visually inspected. The planner and field-note dialog have no horizontal content overflow at that width. Header controls, lot information, captions, movement controls, and footer do not overlap. The temporary viewport override was reset.
+- Field notes successfully reopens the current chapter. Browser logs show no game errors during these checks, only the existing vendored Three.js deprecation warning.
+- The later chapters, reflection branches, and classroom case are exercised through the real controller with DOM/render fixtures, not a new end-to-end browser playthrough. Automated completion fixtures arrange tower geometry; they do not validate novice navigation, learning, or retention.
+
+Still needed: a novice playtest of the full story, a later transfer question, physical touch and screen-reader checks, and pacing/camera-comfort feedback. The guide proposes questions for that pilot; no pilot was conducted. Sources distinguish published learning research, Miner's conceptual proposal, and this game's adaptation. Nothing was published or pushed.
+
+## 2026-09-16 review fixes
+
+The historical record below describes the first build and its intended route. It is not a complete validation of this revision. In particular, its claims of a universal completability proof, a usable ladder, and equal cognitive difficulty were too strong.
+
+- `node --test`: 24 tests pass, covering geometry/placement rules and controller flows.
+- The new placement regressions reject every zero-material landscape placement across all three initial worlds, the specific notch-side exploit, and discontinuous supports. The original supported solutions still complete.
+- Controller tests execute `game.js` with a DOM and renderer adapter. They cover recovering a low lantern, keyboard shortcut scope, independent signal planning, active-time accounting, and an unsuccessful light intervention followed by a fresh successful materials intervention. Tower geometry is arranged as a fixture in those tests; these are not full browser playthroughs.
+- Browser checks on the local revision confirm Tab reaches the impossibility button; planning height 9/lane 10 is blocked on the near yard and height 10 carries; both use no material. Phone-width layout was inspected and overlapping controls corrected.
+- JavaScript syntax checks, `git diff --check`, and local asset/link checks pass. The facilitator guide loads and was visually inspected. The browser recorded no game errors; the vendored Three.js emits its existing script-format deprecation warning.
+- The ladder condition and the ineffective reduced-motion checkbox were removed. Planning and free retrieval replace the earlier fragile check/recovery interaction. No new claim of screen-reader or motion accessibility is made.
+- Active time excludes open dialogs and uses elapsed frame time separately from the physics step cap. The existing movement simulation still slows at very low frame rates. This is not a device-independent measurement of task cost.
+- Material interventions reset to the original walled conditions on every replay. They do not accumulate.
+
+Still requires human testing: a full revised three-lot run with actual mouse/keyboard, pacing, physical touch, camera comfort, assistive technology, and performance on slower devices. No learning effects were measured. No publication was performed as part of these local changes.
+
+## Historical first-build checks (superseded where noted above)
+
 Checked September 16, 2026, in one Chromium-based browser on Windows 11. This records what was actually exercised, how, and what was not.
 
 ## Automated checks

@@ -17,6 +17,7 @@ window.createVoxelView = function(canvas){
     [G.SOIL]   :0x6b563d, [G.GRASS]:0x6f9a4e, [G.STONE]:0xbcae8d,
     [G.HARDPAN]:0x4d483f, [G.TRUNK]:0x6d5638, [G.LEAF] :0x5d8f4e,
     [G.LANTERN]:0xffd27a, [G.PLACED]:0xd6c9a6, [G.ROCK] :0x7b7b83,
+    [G.SITE]   :0xe0cf97,
   };
   /* Faces are shaded by which way they point, so form reads without needing a
      light that moves. */

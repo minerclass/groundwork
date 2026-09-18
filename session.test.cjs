@@ -4,7 +4,7 @@ const G=require('./plots.js');
 
 const plotIds=G.PLOTS.map(p=>p.id);
 const conditionsFor=id=>G.PLOTS.find(p=>p.id===id).conditions;
-/* Every combination of the four affordances, applied to a plot's own conditions. */
+/* Every combination of the available interventions. */
 function everyConditionSet(id){
   const base=conditionsFor(id), out=[base];
   for(let mask=1;mask<(1<<G.AFFORDANCES.length);mask++){
@@ -64,8 +64,7 @@ test('the signal always has to be built up to, never reached from the ground',()
   }
 });
 
-/* Productive: the work is harder, and it can still be finished.
-   Exclusionary: it cannot be finished at all, whatever the builder does. */
+/* Feasibility is not a claim that every access cost is productive. */
 test('the near yard and the far field are both workable, at very different cost',()=>{
   const near=G.assessment('near'), far=G.assessment('far');
   assert.equal(near.workable,true);
@@ -157,7 +156,6 @@ test('the walled lot cannot be finished until a condition changes',()=>{
   const after=Object.fromEntries(G.AFFORDANCES.map(a=>[a.id,G.solveByColumn('walled',a.apply(base),10).finished]));
   assert.equal(after.tool,true);
   assert.equal(after.materials,true);
-  assert.equal(after.ladder,false,'a ladder at the work site does not address a wall around the stone');
   assert.equal(after.light,false,'light does not address a wall around the stone');
 });
 
@@ -181,13 +179,50 @@ test('a block cannot be placed into the builder, the ground, or outside the lot'
   const inTheWay={x:at+.5,y:G.GROUND+1,z:lane+.5};
   assert.equal(G.canPlace(world,at,G.GROUND+1,lane,inTheWay,'stone',5,false).reason,'you are standing there');
   assert.equal(G.canPlace(world,at,G.GROUND+2,lane,inTheWay,'stone',5,false).reason,'you are standing there');
-  /* The lantern is not solid, so it may be set down where the builder stands.
-     That is how it gets to the top of a tower they climbed. */
-  assert.equal(G.canPlace(world,at,G.GROUND+1,lane,inTheWay,'lantern',0,false).ok,true);
+  assert.equal(G.canPlace(world,at,G.GROUND+1,lane,inTheWay,'lantern',0,false).ok,false);
   /* Above the builder's head is fair game. */
   assert.equal(G.canPlace(world,at,G.GROUND+4,lane,inTheWay,'stone',5,false).ok,true);
   /* Material is required, and only one lantern exists. */
   assert.equal(G.canPlace(world,at,G.GROUND+1,lane,beside,'stone',0,false).reason,'no building stone in hand');
-  assert.equal(G.canPlace(world,at,G.GROUND+1,lane,beside,'lantern',0,true).reason,'the lantern is already up');
-  assert.equal(G.canPlace(world,at,G.GROUND+1,lane,beside,'lantern',0,false).ok,true);
+  assert.equal(G.canPlace(world,at,G.GROUND+1,lane,beside,'lantern',0,true).reason,'pick up the lantern before moving it');
+  world.set(at,G.GROUND+1,lane,G.PLACED);
+  const atop={x:at+.5,y:G.GROUND+2,z:lane+.5};
+  assert.equal(G.canPlace(world,at,G.GROUND+2,lane,atop,'lantern',0,false).ok,true);
+});
+
+test('existing landscape never supplies a zero-material winning placement',()=>{
+  for(const id of plotIds){
+    const world=G.buildPlot(id);
+    for(let x=0;x<G.W;x++)for(let y=G.SIGNAL_MIN_Y;y<G.H;y++)for(let z=0;z<G.D;z++){
+      if(world.get(x,y,z)!==G.AIR)continue;
+      assert.equal(G.canPlace(world,x,y,z,null,'lantern',0,false).ok,false,
+        `${id}: landscape placement accepted at ${x},${y},${z}`);
+    }
+  }
+});
+
+test('the notch-side exploit is rejected without changing the geometry judgment',()=>{
+  const world=G.buildPlot('walled');
+  assert.equal(world.get(3,9,8),G.ROCK);
+  assert.equal(G.lanternCarries(world.isSolid,3,9,9).carries,true);
+  assert.equal(G.canPlace(world,3,9,9,{x:3.5,y:5,z:10.5},'lantern',0,false).ok,false);
+  assert.equal(G.assessment('walled').workable,false);
+});
+
+test('a tower needs a continuous built support rooted in the marked foundation',()=>{
+  const world=G.buildPlot('near');
+  world.set(7,9,10,G.PLACED);
+  assert.equal(G.canPlace(world,7,10,10,null,'lantern',0,false).ok,false);
+  for(let y=G.GROUND+1;y<10;y++)world.set(7,y,10,G.PLACED);
+  assert.equal(G.canPlace(world,7,10,10,null,'lantern',0,false).ok,true);
+  world.set(7,7,10,G.AIR);
+  assert.equal(G.canPlace(world,7,10,10,null,'lantern',0,false).ok,false);
+});
+
+test('the foundation is marked and cannot be accidentally removed',()=>{
+  const world=G.buildPlot('near');
+  for(let x=G.BUILD_SITE.minX;x<=G.BUILD_SITE.maxX;x++)for(let z=G.BUILD_SITE.minZ;z<=G.BUILD_SITE.maxZ;z++){
+    assert.equal(world.get(x,G.GROUND,z),G.SITE);
+    for(const tool of Object.keys(G.TOOLS))assert.equal(G.canBreak(tool,G.SITE),false);
+  }
 });

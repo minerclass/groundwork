@@ -1,9 +1,8 @@
-/* Plots, conditions, and the one judgment that never changes.
+/* Plots, access conditions, and a shared signal criterion.
 
    The same builder does the same job three times. What differs between plots is
-   never the person and never the thinking: it is the material conditions the
-   work has to happen in. Everything here is arranged so that difference is
-   structural rather than described, and session.test.cjs asserts it.
+   never the person. Landscapes differ; interventions preserve the criterion
+   while changing access. Tests cover modeled rules, not cognitive difficulty.
 */
 (function(root){
 'use strict';
@@ -11,7 +10,7 @@
 /* ---------------------------------------------------------------------------
    Blocks
 --------------------------------------------------------------------------- */
-const AIR=0,SOIL=1,GRASS=2,STONE=3,HARDPAN=4,TRUNK=5,LEAF=6,LANTERN=7,PLACED=8,ROCK=9;
+const AIR=0,SOIL=1,GRASS=2,STONE=3,HARDPAN=4,TRUNK=5,LEAF=6,LANTERN=7,PLACED=8,ROCK=9,SITE=10;
 const BLOCKS={
   [AIR]    :{name:'air',             solid:false},
   [SOIL]   :{name:'soil',            solid:true,  hardness:1},
@@ -24,6 +23,7 @@ const BLOCKS={
   [PLACED] :{name:'placed stone',    solid:true,  hardness:3, material:true},
   /* Landscape, not supply. Cutting it yields nothing you can build with. */
   [ROCK]   :{name:'outcrop',         solid:true,  hardness:8},
+  [SITE]   :{name:'marked foundation',solid:true},
 };
 
 /* ---------------------------------------------------------------------------
@@ -55,9 +55,8 @@ function breakSeconds(tool,block){
    well above head height so it reads as a signal rather than a lamp.
 
    This takes geometry and nothing else. It cannot see a tool, a light level, a
-   distance, or which plot it is on. No condition can make it easier, which is
-   the whole point: infrastructure decides whether you ever reach this judgment,
-   not how hard the judgment is once you are standing in front of it.
+   distance, or which plot it is on. Interventions preserve this criterion;
+   that is not a claim that each landscape requires identical thinking.
 --------------------------------------------------------------------------- */
 const SIGNAL_MIN_Y=9;
 function lanternCarries(isSolid,x,y,z){
@@ -72,6 +71,8 @@ function lanternCarries(isSolid,x,y,z){
    Plots
 --------------------------------------------------------------------------- */
 const W=40,H=22,D=20,GROUND=4,WORK_X=7;
+const BUILD_SITE={minX:6,maxX:8,minZ:7,maxZ:13};
+const inBuildSite=(x,z)=>x>=BUILD_SITE.minX&&x<=BUILD_SITE.maxX&&z>=BUILD_SITE.minZ&&z<=BUILD_SITE.maxZ;
 const idx=(x,y,z)=>x+W*(y+H*z);
 const inside=(x,y,z)=>x>=0&&y>=0&&z>=0&&x<W&&y<H&&z<D;
 
@@ -79,15 +80,15 @@ const PLOTS=[
 { id:'near', name:'The near yard',
   blurb:'Stone at the edge of the yard, a pick that bites, and the light holding.',
   note:'Everything the job needs is within a few steps of the job.',
-  conditions:{tool:'good', light:1, stoneAt:7, ladder:true} },
+  conditions:{tool:'good', light:1, stoneAt:7} },
 { id:'far', name:'The far field',
   blurb:'The same job. The stone is across the field, the pick is worn, and the light is going.',
   note:'Nothing here is impossible. All of it costs more.',
-  conditions:{tool:'worn', light:.42, stoneAt:24, ladder:false} },
+  conditions:{tool:'worn', light:.42, stoneAt:24} },
 { id:'walled', name:'The walled lot',
   blurb:'The same job again. You can see the stone from where you are standing.',
   note:'Seeing the material and reaching it are not the same thing.',
-  conditions:{tool:'worn', light:.72, stoneAt:16, ladder:false, walled:true} },
+  conditions:{tool:'worn', light:.72, stoneAt:16, walled:true} },
 ];
 
 /* What can be changed about a plot. These are conditions on the work, never
@@ -95,7 +96,6 @@ const PLOTS=[
 const AFFORDANCES=[
   {id:'tool',      label:'A pick that cuts what is actually here', apply:c=>({...c,tool:'steel'})},
   {id:'materials', label:'Stone delivered to the work site',       apply:c=>({...c,stocked:true})},
-  {id:'ladder',    label:'A ladder standing at the work site',     apply:c=>({...c,ladder:true})},
   {id:'light',     label:'Light to work by',                       apply:c=>({...c,light:1})},
 ];
 
@@ -115,6 +115,7 @@ function buildPlot(id,conditions){
     for(let y=0;y<GROUND;y++)set(x,y,z,SOIL);
     set(x,GROUND,z,GRASS);
   }
+  for(let x=BUILD_SITE.minX;x<=BUILD_SITE.maxX;x++)for(let z=BUILD_SITE.minZ;z<=BUILD_SITE.maxZ;z++)set(x,GROUND,z,SITE);
   /* What stands between this plot and the valley. Each plot's obstruction has a
      different shape, so the answer has to be worked out here rather than
      carried over from the last plot. */
@@ -174,9 +175,8 @@ function buildPlot(id,conditions){
 
 /* ---------------------------------------------------------------------------
    Reachability
-   Can the job be done at all, with the conditions as given? The productive
-   versus exclusionary distinction reduced to a question with an answer: is
-   there any route from what the builder has to the work itself.
+   Can the intended construction route be completed under these conditions?
+   Feasibility does not establish that every access cost is productive.
 --------------------------------------------------------------------------- */
 function reachableMaterial(world,conditions){
   const {blocks}=world, tool=conditions.tool;
@@ -185,9 +185,8 @@ function reachableMaterial(world,conditions){
   const passable=(x,y,z)=>{const v=at(x,y,z);return v===AIR||v===LANTERN||canBreak(tool,v);};
   /* Somewhere the builder can stand: body and head clear, something underfoot. */
   const standable=(x,y,z)=>inside(x,y,z)&&passable(x,y,z)&&passable(x,y+1,z)&&solid(x,y-1,z);
-  /* How far up the builder can get using only what is already on site. One
-     block is a step. A ladder that is already there is a different world. */
-  const climb=conditions.ladder?7:1;
+  /* The player controller and this route model both step up one block. */
+  const climb=1;
 
   const seen=new Set(), key=(x,y,z)=>x+','+y+','+z;
   const start=[Math.floor(world.spawn.x),world.spawn.y,Math.floor(world.spawn.z)];
@@ -223,15 +222,20 @@ function assessment(plotId,conditions){
   const world=buildPlot(plotId,c);
   const stone=reachableMaterial(world,c);
   const cuts=canBreak(c.tool,STONE);
+  let plan=null;
+  for(let z=BUILD_SITE.minZ;z<=BUILD_SITE.maxZ;z++){
+    const candidate=solveByColumn(plotId,c,z);
+    if(candidate.finished&&(!plan||candidate.stoneNeeded<plan.stoneNeeded))plan=candidate;
+  }
   return {
     plot:plotId,
     stoneWithinReach:stone,
     toolCutsStone:cuts,
     secondsPerBlock:breakSeconds(c.tool,STONE),
     /* Workable means the job can be finished at all. It says nothing about cost. */
-    workable:stone>0&&cuts,
+    workable:!!plan,
     /* Why not, when not. Always a condition, never a person. */
-    barrier:!cuts?'this tool will not cut stone':stone===0?'the stone is in sight and there is no way through to it':null,
+    barrier:!cuts?'this tool will not cut stone':stone===0?'the stone is in sight and there is no way through to it':!plan?'there is not enough reachable stone for a carrying tower':null,
   };
 }
 
@@ -245,7 +249,13 @@ const BODY=1.8;
 function canPlace(world,tx,ty,tz,player,holding,carried,lanternUp){
   if(!inside(tx,ty,tz))return {ok:false,reason:'outside the lot'};
   if(world.get(tx,ty,tz)!==AIR)return {ok:false,reason:'something is already there'};
-  if(holding==='lantern'){ if(lanternUp)return {ok:false,reason:'the lantern is already up'}; }
+  if(holding==='lantern'){
+    if(lanternUp)return {ok:false,reason:'pick up the lantern before moving it'};
+    if(!inBuildSite(tx,tz))return {ok:false,reason:'build the signal on the marked foundation'};
+    if(ty<=GROUND+1)return {ok:false,reason:'the lantern needs a stone tower on the marked foundation'};
+    for(let y=GROUND+1;y<ty;y++)if(world.get(tx,y,tz)!==PLACED)
+      return {ok:false,reason:'the lantern needs an unbroken stone tower beneath it'};
+  }
   else if(carried<=0)return {ok:false,reason:'no building stone in hand'};
   /* The guard exists so nobody seals themselves inside solid stone. The lantern
      is not solid: you climb the tower and set it down where you are standing. */
@@ -290,7 +300,7 @@ function solveByColumn(plotId,conditions,z){
 }
 
 const api={AIR,SOIL,GRASS,STONE,HARDPAN,TRUNK,LEAF,LANTERN,PLACED,ROCK,BLOCKS,TOOLS,
-  W,H,D,GROUND,WORK_X,SIGNAL_MIN_Y,PLOTS,AFFORDANCES,
+  SITE,BUILD_SITE,inBuildSite,W,H,D,GROUND,WORK_X,SIGNAL_MIN_Y,PLOTS,AFFORDANCES,
   idx,inside,canBreak,breakSeconds,lanternCarries,buildPlot,reachableMaterial,assessment,
   BODY,canPlace,solveByColumn};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.Groundwork=api;

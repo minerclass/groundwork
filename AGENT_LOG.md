@@ -6,6 +6,47 @@ or tokens.
 
 ---
 
+## 2026-09-18 - Add the apprentice story and explicit learning arc
+
+Added Mara, an authored mentor, and four chapter briefings: read the land,
+question the extra effort, recognize a barrier, and help without taking over.
+Field notes reopen the current mission and construction instructions. Planning
+now invites a prediction and gives explanatory feedback. Optional post-lot
+responses connect the experience to classroom decisions without scores or gates.
+The ending adds a source-access/AI-output case and a sourced research panel.
+
+Research wording distinguishes Soderstrom and Bjork's performance/learning
+review from Miner's conceptual proposal and this game's adaptation. The linked
+article describes four dimensions; the game foregrounds infrastructure as the
+supporting conditions. The fixed mentor responses are not authentic dialogue
+or an AI service. No durable-learning claim or outcome measure is added.
+
+Signal geometry and placement rules are unchanged. No dependencies, saved
+responses, analytics, or network services were added. Local changes only;
+no commit, push, or deployment. See validation.md for checks and limits.
+
+## 2026-09-16 - Correct placement, recovery, and access claims
+
+Independent review found a zero-stone landscape placement that contradicted the
+walled-lot assessment, a stranded lantern after a low placement, and Tab
+interception that blocked ordinary access to required controls.
+
+Added a visible foundation and continuous built-support requirement, keeping
+placement eligibility separate from the geometry-only signal criterion. Added
+free lantern retrieval, a height/lane planning dialog, native Tab navigation,
+and repeated intervention attempts with fresh conditions. Removed the unused
+ladder option and inert reduced-motion checkbox. Dragging now looks without
+also cutting. Updated tallies and active-time accounting, and corrected copy
+that equated feasibility with productive friction or invariant criteria with
+identical cognitive difficulty.
+
+Added a printable facilitator guide and links to Friction Lab and The Friction
+Atlas. Kept all runtime dependencies local. Added regression and controller-flow
+tests; `node --test` passes 24 tests. Browser validation and remaining limits are
+recorded in `validation.md`. Local changes only; not published.
+
+---
+
 ## 2026-09-16 - Published
 
 Live at https://minerclass.github.io/groundwork/ and linked from the games hub.
